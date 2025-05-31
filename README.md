@@ -24,7 +24,6 @@ Projeto acadêmico com o objetivo de desenvolver uma aplicação web para **gere
 | JWT Bearer            | Autenticação segura baseada em tokens                 |
 | AutoMapper            | Mapeamento de objetos entre DTOs e Entidades          |
 | Swagger               | Documentação e testes interativos da API              |
-| PlantUML (opcional)   | Diagrama da arquitetura e fluxo de autenticação       |
 
 ---
 
