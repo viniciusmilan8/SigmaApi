@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Sigma.Application.Dtos;
-using Sigma.Application.Interfaces;
-using Sigma.Domain.Dtos;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Sigma.Application.Dtos.Projeto;
+using Sigma.Application.Interfaces.Projeto;
 
 namespace Sigma.API.Controllers
 {
@@ -16,6 +16,15 @@ namespace Sigma.API.Controllers
             _projetoService = projetoService;
         }
 
+        [Authorize(Roles = "Admin,Leitor")]
+        [HttpGet]
+        public async Task<IActionResult> Buscar()
+        {
+            var projetos = await _projetoService.BuscarTodos();
+            return Ok(projetos);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("inserir")]
         public async Task<IActionResult> Inserir([FromBody] ProjetoNovoDto model)
@@ -23,10 +32,20 @@ namespace Sigma.API.Controllers
             return new JsonResult(await _projetoService.Inserir(model));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Buscar() {
-            var projetos = await _projetoService.BuscarTodos();
-            return Ok(projetos);
+        [Authorize(Roles = "Admin")]
+        [HttpPatch]
+        [Route("alterar")]
+        public async Task<IActionResult> Alterar([FromBody] AtualizarProjetoDto projetoAtualizado)
+        {
+            return new JsonResult(await _projetoService.Alterar(projetoAtualizado));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete]
+        [Route("deletar")]
+        public async Task<IActionResult> Deletar([FromBody] long id)
+        {
+            return new JsonResult(await _projetoService.Deletar(id));
         }
     }
 }

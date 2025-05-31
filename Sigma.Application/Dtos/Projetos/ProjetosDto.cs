@@ -1,6 +1,6 @@
 ﻿using Sigma.Domain.Enums;
 
-namespace Sigma.Application.Dtos
+namespace Sigma.Application.Dtos.Projeto
 {
     public class ProjetosDto
     {

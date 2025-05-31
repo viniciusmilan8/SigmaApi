@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using Sigma.Application.Dtos;
-using Sigma.Domain.Dtos;
+using Sigma.Application.Dtos.Projeto;
 using Sigma.Domain.Entities;
 
 namespace Sigma.Application.Mappers
