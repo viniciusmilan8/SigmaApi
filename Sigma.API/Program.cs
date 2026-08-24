@@ -16,7 +16,19 @@ internal class Program
 
         var configuration = builder.Configuration;
 
-        builder.Services.AddApplicationContext(configuration.GetValue<string>("ConnectionStrings:Database")!);
+        // Segredos não ficam versionados: em desenvolvimento vêm do User Secrets,
+        // em produção de variáveis de ambiente. Ver README.
+        var connectionString = configuration.GetConnectionString("Database");
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new InvalidOperationException(
+                "ConnectionStrings:Database não configurada. Rode: dotnet user-secrets set \"ConnectionStrings:Database\" \"<connection string>\"");
+
+        var secretKey = configuration["JwtSettings:SecretKey"];
+        if (string.IsNullOrWhiteSpace(secretKey))
+            throw new InvalidOperationException(
+                "JwtSettings:SecretKey não configurada. Rode: dotnet user-secrets set \"JwtSettings:SecretKey\" \"<chave de 32+ bytes>\"");
+
+        builder.Services.AddApplicationContext(connectionString);
 
         MapperConfiguration mapperConfiguration = new MapperConfiguration(mapperConfig =>
         {
@@ -26,7 +38,6 @@ internal class Program
         builder.Services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                var secretKey = builder.Configuration["JwtSettings:SecretKey"];
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -45,14 +56,14 @@ internal class Program
                         context.HandleResponse();
                         context.Response.StatusCode = 401;
                         context.Response.ContentType = "application/json";
-                        return context.Response.WriteAsync("{\"erro\": \"N�o autorizado. Token ausente ou inv�lido.\"}");
+                        return context.Response.WriteAsync("{\"erro\": \"Não autorizado. Token ausente ou inválido.\"}");
                     },
 
                     OnForbidden = context =>
                     {
                         context.Response.StatusCode = 403;
                         context.Response.ContentType = "application/json";
-                        return context.Response.WriteAsync("{\"erro\": \"Acesso negado. Voc� n�o tem permiss�o para esta opera��o.\"}");
+                        return context.Response.WriteAsync("{\"erro\": \"Acesso negado. Você não tem permissão para esta operação.\"}");
                     }
                 };
             });
